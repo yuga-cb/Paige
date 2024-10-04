@@ -42,6 +42,10 @@ bun run dev
 ```
 <br />
 
+## TODOs
+- Allow ENS and Basename recipients
+- Implement system audio recording
+
 ## Resources
 
 - [OnchainKit documentation](https://onchainkit.xyz)
