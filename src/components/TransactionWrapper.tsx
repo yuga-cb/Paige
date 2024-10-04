@@ -12,18 +12,18 @@ import type {
 } from '@coinbase/onchainkit/transaction';
 import type { Address, ContractFunctionParameters } from 'viem';
 import {
-  BASE_SEPOLIA_CHAIN_ID,
-  mintABI,
-  mintContractAddress,
+  BASE_MAINNET_CHAIN_ID,
+  transferABI,
+  USDC_CONTRACT_ADDRESS,
 } from '../constants';
 
-export default function TransactionWrapper({ address }: { address: Address }) {
+export default function TransactionWrapper({ address, value }: { address: Address, value: bigint }) {
   const contracts = [
     {
-      address: mintContractAddress,
-      abi: mintABI,
-      functionName: 'mint',
-      args: [address],
+      address: USDC_CONTRACT_ADDRESS,
+      abi: transferABI,
+      functionName: 'transfer',
+      args: [address, value],
     },
   ] as unknown as ContractFunctionParameters[];
 
@@ -40,7 +40,7 @@ export default function TransactionWrapper({ address }: { address: Address }) {
       <Transaction
         contracts={contracts}
         className="w-[450px]"
-        chainId={BASE_SEPOLIA_CHAIN_ID}
+        chainId={BASE_MAINNET_CHAIN_ID}
         onError={handleError}
         onSuccess={handleSuccess}
       >
