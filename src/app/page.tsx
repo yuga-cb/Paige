@@ -17,6 +17,8 @@ export default function Page() {
   const [transcription, setTranscription] = useState('');
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [extractedTransaction, setExtractedTransaction] = useState('');
+  const [receiverAddress, setReceiverAddress] = useState<`0x${string}` | undefined>();
+  const [amountValue, setAmountValue] = useState(BigInt(0));
   const [isExtracting, setIsExtracting] = useState(false);
 
   const startRecording = async () => {
@@ -150,6 +152,22 @@ export default function Page() {
     }
   }, [transcription]);
 
+  useEffect(() => {
+    if (extractedTransaction) {
+      try {
+        const parsedTransaction = JSON.parse(extractedTransaction);
+        if (parsedTransaction.receiver_address && parsedTransaction.amount_usdc) {
+          setReceiverAddress(parsedTransaction.receiver_address);
+          setAmountValue(BigInt(Math.round(parseFloat(parsedTransaction.amount_usdc) * 1e6)));
+          console.log('Receiver address:', receiverAddress);
+          console.log('Amount value:', amountValue);
+        }
+      } catch (error) {
+        console.error('Error parsing extracted transaction:', error);
+      }
+    }
+  }, [extractedTransaction]); // Added extractedTransaction as a dependency
+
   return (
     <div className="flex h-full w-96 max-w-full flex-col px-1 md:w-[1008px]">
       <section className="mt-6 mb-6 flex w-full flex-col md:flex-row">
@@ -227,14 +245,13 @@ export default function Page() {
             </pre>
           </div>
         </div>
-        {address ? (
-          <TransactionWrapper address="0x450B2dC4Ba2a08E58C7ECc3DE48e3C825262caF8" value={BigInt(1)} />
-        ) : (
-          <WalletWrapper
-            className="w-[600px] max-w-full"
-            text="Sign in to transact"
+        {address && receiverAddress && amountValue ? (
+          <TransactionWrapper 
+            address={receiverAddress} 
+            value={amountValue || BigInt(1)} 
           />
-        )}
+        ) : ''
+        }
       </section>
       <Footer />
     </div>
