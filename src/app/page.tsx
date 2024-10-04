@@ -31,8 +31,6 @@ export default function Page() {
       </section>
       <section className="templateSection flex w-full flex-col items-center justify-center gap-4 rounded-xl bg-gray-100 px-2 py-4 md:grow">
         <div className="flex flex-col w-[600px] max-w-full items-center justify-center rounded-xl p-6">
-          <h2 className="text-2xl font-bold mb-6">Record and Transcribe Audio</h2>
-          
           <div className="w-full mb-6">
             <h3 className="text-xl font-semibold mb-3">Record with Microphone</h3>
             <div className="flex gap-4">
@@ -53,8 +51,13 @@ export default function Page() {
             <h3 className="text-xl font-semibold mb-3">Transcript</h3>
             <textarea className="w-full h-32 p-2 rounded border border-gray-300" placeholder="Transcript will appear here..."></textarea>
           </div>
+          <div className="w-full mt-6">
+            <h3 className="text-xl font-semibold mb-3">Extracted output</h3>
+            <pre className="w-full h-32 p-2 rounded border border-gray-300 font-mono text-sm overflow-auto bg-white">
+              <code>Extracted output will appear here...</code>
+            </pre>
+          </div>
         </div>
-        
         {address ? (
           <TransactionWrapper address={address} />
         ) : (
