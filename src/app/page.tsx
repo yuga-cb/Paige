@@ -25,7 +25,6 @@ export default function Page() {
 
   const { data: resolvedAddress, isError, isLoading, error: resolutionError } = useEnsAddress({
     name: ensName,
-    // Basename resolver
     universalResolverAddress: BASE_RESOLVER_ADDRESS
   });
 
@@ -207,7 +206,7 @@ export default function Page() {
         <div className="flex flex-col w-[600px] max-w-full items-center justify-center rounded-xl p-6">
           <div className="w-full mb-6">
             <h3 className="text-xl font-semibold mb-3">Record with Microphone</h3>
-            <div className="flex gap-4">
+            <div className="flex gap-4 items-center">
               <button 
                 className={`${isRecording ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#4f46e5] hover:bg-[#4338ca]'} text-white px-6 py-2 rounded-lg font-bold`}
                 onClick={startRecording}
@@ -222,14 +221,14 @@ export default function Page() {
               >
                 Stop Recording
               </button>
-            </div>
-          </div>
-
-          <div className="w-full mb-6">
-            <h3 className="text-xl font-semibold mb-3">Record System Audio (e.g. Zoom Call)</h3>
-            <div className="flex gap-4">
-              <button className="bg-[#4f46e5] hover:bg-[#4338ca] text-white px-6 py-2 rounded-lg font-bold">Start Recording</button>
-              <button className="bg-gray-400 text-white px-6 py-2 rounded-lg cursor-not-allowed font-bold" disabled>Stop Recording</button>
+              {isRecording && (
+                <div className="flex items-center">
+                  <div className="animate-pulse flex space-x-4">
+                    <div className="rounded-full bg-red-400 h-3 w-3"></div>
+                  </div>
+                  <span className="ml-2">Recording...</span>
+                </div>
+              )}
             </div>
           </div>
 
