@@ -1,5 +1,5 @@
 'use client';
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import Footer from 'src/components/Footer';
 import TransactionWrapper from 'src/components/TransactionWrapper';
 import WalletWrapper from 'src/components/WalletWrapper';
@@ -14,36 +14,110 @@ export default function Page() {
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
+  const [transcription, setTranscription] = useState('');
+  const [isTranscribing, setIsTranscribing] = useState(false);
 
   const startRecording = async () => {
+    console.log('Starting recording...');
     try {
+      console.log('Requesting microphone access');
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      console.log('Microphone access granted');
       const mediaRecorder = new MediaRecorder(stream);
       mediaRecorderRef.current = mediaRecorder;
 
       mediaRecorder.ondataavailable = (event) => {
+        console.log('Data available event triggered');
         if (event.data.size > 0) {
+          console.log(`Pushing chunk of size ${event.data.size}`);
           chunksRef.current.push(event.data);
         }
       };
 
       mediaRecorder.onstop = () => {
+        console.log('Recording stopped');
         const blob = new Blob(chunksRef.current, { type: 'audio/wav' });
+        console.log(`Created audio blob of size ${blob.size}`);
         setAudioBlob(blob);
         chunksRef.current = [];
       };
 
       mediaRecorder.start();
+      console.log('MediaRecorder started');
       setIsRecording(true);
+      console.log('Recording state set to true');
     } catch (error) {
       console.error('Error accessing microphone:', error);
     }
   };
 
-  const stopRecording = () => {
+  const stopRecording = async () => {
+    console.log('Stopping recording...');
     if (mediaRecorderRef.current && isRecording) {
+      console.log('MediaRecorder exists and is recording');
       mediaRecorderRef.current.stop();
+      console.log('MediaRecorder stopped');
       setIsRecording(false);
+      console.log('Set is recording to false');
+    } else {
+      console.log('MediaRecorder not available or not recording');
+    }
+  };
+
+  useEffect(() => {
+    const transcribe = async () => {
+      if (audioBlob) {
+        setIsTranscribing(true);
+        console.log('Set isRecording to false and isTranscribing to true');
+        console.log('Audio blob created, size:', audioBlob.size);
+        try {
+          console.log('Starting audio transcription');
+          const result = await transcribeAudio(audioBlob);
+          console.log('Transcription result:', result);
+          setTranscription(result);
+        } catch (error) {
+          console.error('Transcription error:', error);
+          // Handle error (e.g., show error message to user)
+        } finally {
+          console.log('Transcription process completed');
+          setIsTranscribing(false);
+        }
+      } else {
+        console.log('No audio blob created');
+      }
+    };
+
+    transcribe();
+  }, [audioBlob]);
+
+  async function transcribeAudio(audioBlob: Blob) {
+    console.log('Transcribing audio, blob size:', audioBlob.size);
+    // Convert Blob to File
+    const audioFile = new File([audioBlob], "audio.wav", { type: audioBlob.type });
+    console.log('Created audio file:', audioFile.name, 'size:', audioFile.size);
+
+    const formData = new FormData();
+    formData.append('audio', audioFile);
+    console.log('FormData created with audio file');
+
+    try {
+      console.log('Sending POST request to /api/transcribe');
+      const response = await fetch('/api/transcribe', {
+        method: 'POST',
+        body: formData,
+      });
+
+      console.log('Received response, status:', response.status);
+      if (!response.ok) {
+        throw new Error('Transcription failed');
+      }
+
+      const data = await response.json();
+      console.log('Transcription data received:', data);
+      return data.transcription;
+    } catch (error) {
+      console.error('Error transcribing audio:', error);
+      throw error;
     }
   };
 
@@ -97,9 +171,24 @@ export default function Page() {
 
           <div className="w-full">
             <h3 className="text-xl font-semibold mb-3">Transcript</h3>
-            <textarea className="w-full h-32 p-2 rounded border border-gray-300" placeholder="Transcript will appear here..."></textarea>
+            <textarea 
+              className="w-full h-32 p-2 rounded border border-gray-300" 
+              placeholder="Transcript will appear here..."
+              value={transcription}
+              readOnly
+            ></textarea>
             <div className="mt-4 flex justify-center">
-              <button className="bg-[#4f46e5] hover:bg-[#4338ca] text-white px-6 py-2 rounded-lg font-bold">Process</button>
+              {isTranscribing ? (
+                <div className="text-blue-600">Transcribing...</div>
+              ) : (
+                <button 
+                  className="bg-[#4f46e5] hover:bg-[#4338ca] text-white px-6 py-2 rounded-lg font-bold"
+                  onClick={stopRecording}
+                  disabled={!isRecording}
+                >
+                  Stop Recording and Transcribe
+                </button>
+              )}
             </div>
           </div>
           <div className="w-full mt-6">
