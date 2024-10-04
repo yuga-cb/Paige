@@ -17,7 +17,7 @@ export default function Page() {
         <div className="flex w-full flex-row items-center justify-between gap-2 md:gap-0">
           <a
             href={ONCHAINKIT_LINK}
-            title="onchainkit"
+            title="paige"
             target="_blank"
             rel="noreferrer"
           >
