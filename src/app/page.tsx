@@ -16,6 +16,8 @@ export default function Page() {
   const chunksRef = useRef<Blob[]>([]);
   const [transcription, setTranscription] = useState('');
   const [isTranscribing, setIsTranscribing] = useState(false);
+  const [extractedTransaction, setExtractedTransaction] = useState('');
+  const [isExtracting, setIsExtracting] = useState(false);
 
   const startRecording = async () => {
     console.log('Starting recording...');
@@ -121,6 +123,33 @@ export default function Page() {
     }
   };
 
+  const extractTransaction = useCallback(async () => {
+    if (transcription) {
+      setIsExtracting(true);
+      try {
+        const response = await fetch('/api/extract', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ transcription }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to extract transaction');
+        }
+
+        const data = await response.json();
+        setExtractedTransaction(data.transaction);
+      } catch (error) {
+        console.error('Error extracting transaction:', error);
+        // Handle error (e.g., show error message to user)
+      } finally {
+        setIsExtracting(false);
+      }
+    }
+  }, [transcription]);
+
   return (
     <div className="flex h-full w-96 max-w-full flex-col px-1 md:w-[1008px]">
       <section className="mt-6 mb-6 flex w-full flex-col md:flex-row">
@@ -175,26 +204,26 @@ export default function Page() {
               className="w-full h-32 p-2 rounded border border-gray-300" 
               placeholder="Transcript will appear here..."
               value={transcription}
-              readOnly
+              onChange={(e) => setTranscription(e.target.value)}
             ></textarea>
             <div className="mt-4 flex justify-center">
-              {isTranscribing ? (
-                <div className="text-blue-600">Transcribing...</div>
+              {isExtracting ? (
+                <div className="text-blue-600">Extracting transaction...</div>
               ) : (
                 <button 
                   className="bg-[#4f46e5] hover:bg-[#4338ca] text-white px-6 py-2 rounded-lg font-bold"
-                  onClick={stopRecording}
-                  disabled={!isRecording}
+                  onClick={extractTransaction}
+                  disabled={!transcription}
                 >
-                  Stop Recording and Transcribe
+                  Extract Transaction
                 </button>
               )}
             </div>
           </div>
           <div className="w-full mt-6">
-            <h3 className="text-xl font-semibold mb-3">Extracted output</h3>
+            <h3 className="text-xl font-semibold mb-3">Extracted Transaction</h3>
             <pre className="w-full h-32 p-2 rounded border border-gray-300 font-mono text-sm overflow-auto bg-white">
-              <code>Extracted output will appear here...</code>
+              <code>{extractedTransaction || 'Extracted transaction will appear here...'}</code>
             </pre>
           </div>
         </div>
