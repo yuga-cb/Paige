@@ -1,17 +1,6 @@
-<p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/coinbase/onchainkit/main/site/docs/public/logo/v0-27.png">
-    <img alt="OnchainKit logo vibes" src="https://raw.githubusercontent.com/coinbase/onchainkit/main/site/docs/public/logo/v0-27.png" width="auto">
-  </picture>
-</p>
+# PaigeAI
 
-# Onchain App Template
-
-An Onchain App Template build with [OnchainKit](https://onchainkit.xyz), and ready to be deployed to Vercel.
-
-Play with it live on https://onchain-app-template.vercel.app
-
-Have fun! ⛵️
+Your Onchain Payment Agent.
 
 <br />
 
@@ -23,13 +12,20 @@ You can find the API key on the [Coinbase Developer Portal's OnchainKit page](ht
 
 You can find your Wallet Connector project ID at [Wallet Connect](https://cloud.walletconnect.com).
 
-```sh
-# See https://portal.cdp.coinbase.com/products/onchainkit
-NEXT_PUBLIC_CDP_API_KEY="GET_FROM_COINBASE_DEVELOPER_PLATFORM"
-
-# See https://cloud.walletconnect.com
-NEXT_PUBLIC_WC_PROJECT_ID="GET_FROM_WALLET_CONNECT"
 ```
+# See https://portal.cdp.coinbase.com/products/onchainkit
+NEXT_PUBLIC_CDP_API_KEY="Your OncahinKit API KEY"
+
+# ~~~
+NEXT_PUBLIC_ENVIRONMENT=localhost
+
+# See https://cloud.walletconnect.com/
+NEXT_PUBLIC_WC_PROJECT_ID="Your Wallet Connect Project ID"
+
+# See https://platform.openai.com/
+OPENAI_API_KEY="Your OpenAPI API Key"
+```
+
 <br />
 
 ## Locally run
