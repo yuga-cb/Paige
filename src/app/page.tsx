@@ -212,7 +212,7 @@ export default function Page() {
             <h3 className="text-xl font-semibold mb-3">Record System Audio (e.g. Zoom Call)</h3>
             <div className="flex gap-4">
               <button className="bg-[#4f46e5] hover:bg-[#4338ca] text-white px-6 py-2 rounded-lg font-bold">Start Recording</button>
-              <button className="bg-gray-400 px-6 py-2 rounded-lg cursor-not-allowed font-bold" disabled>Stop Recording</button>
+              <button className="bg-gray-400 text-white px-6 py-2 rounded-lg cursor-not-allowed font-bold" disabled>Stop Recording</button>
             </div>
           </div>
 
