@@ -7,6 +7,7 @@ import WalletWrapper from 'src/components/WalletWrapper';
 import { ONCHAINKIT_LINK } from 'src/links';
 import LoginButton from '../components/LoginButton';
 import SignupButton from '../components/SignupButton';
+import { BASE_RESOLVER_ADDRESS } from 'src/constants';
 
 export default function Page() {
   const { address } = useAccount();
@@ -25,7 +26,7 @@ export default function Page() {
   const { data: resolvedAddress, isError, isLoading, error: resolutionError } = useEnsAddress({
     name: ensName,
     // Basename resolver
-    universalResolverAddress: '0xC6d566A56A1aFf6508b41f6c90ff131615583BCD'
+    universalResolverAddress: BASE_RESOLVER_ADDRESS
   });
 
   const startRecording = async () => {
@@ -182,7 +183,7 @@ export default function Page() {
     if (resolvedAddress) {
       setReceiverAddress(resolvedAddress);
     }
-  }, [resolvedAddress, isError, isLoading, ensName, resolutionError]);
+  }, [resolvedAddress]);
 
   return (
     <div className="flex h-full w-96 max-w-full flex-col px-1 md:w-[1008px]">

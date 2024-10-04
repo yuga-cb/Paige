@@ -18,6 +18,7 @@ export const mintABI = [
 
 export const BASE_MAINNET_CHAIN_ID = 8453;
 export const USDC_CONTRACT_ADDRESS = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
+export const BASE_RESOLVER_ADDRESS = '0xC6d566A56A1aFf6508b41f6c90ff131615583BCD';
 export const approveABI = [
   {
     inputs: [

@@ -43,7 +43,7 @@ bun run dev
 <br />
 
 ## TODOs
-- Allow ENS and Basename recipients
+- Allow ENS recipients
 - Implement system audio recording
 
 ## Resources
