@@ -1,10 +1,10 @@
 'use client';
 import { useState, useRef, useCallback, useEffect } from 'react';
+import { useAccount, useEnsAddress } from 'wagmi';
 import Footer from 'src/components/Footer';
 import TransactionWrapper from 'src/components/TransactionWrapper';
 import WalletWrapper from 'src/components/WalletWrapper';
 import { ONCHAINKIT_LINK } from 'src/links';
-import { useAccount } from 'wagmi';
 import LoginButton from '../components/LoginButton';
 import SignupButton from '../components/SignupButton';
 
@@ -20,6 +20,13 @@ export default function Page() {
   const [receiverAddress, setReceiverAddress] = useState<`0x${string}` | undefined>();
   const [amountValue, setAmountValue] = useState(BigInt(0));
   const [isExtracting, setIsExtracting] = useState(false);
+  const [ensName, setEnsName] = useState<string | undefined>();
+
+  const { data: resolvedAddress, isError, isLoading, error: resolutionError } = useEnsAddress({
+    name: ensName,
+    // Basename resolver
+    universalResolverAddress: '0xC6d566A56A1aFf6508b41f6c90ff131615583BCD'
+  });
 
   const startRecording = async () => {
     console.log('Starting recording...');
@@ -157,16 +164,25 @@ export default function Page() {
       try {
         const parsedTransaction = JSON.parse(extractedTransaction);
         if (parsedTransaction.receiver_address && parsedTransaction.amount_usdc) {
-          setReceiverAddress(parsedTransaction.receiver_address);
+          const address = parsedTransaction.receiver_address;
+          if (address.endsWith('.eth')) {
+            setEnsName(address);
+          } else {
+            setReceiverAddress(address as `0x${string}`);
+          }
           setAmountValue(BigInt(Math.round(parseFloat(parsedTransaction.amount_usdc) * 1e6)));
-          console.log('Receiver address:', receiverAddress);
-          console.log('Amount value:', amountValue);
         }
       } catch (error) {
         console.error('Error parsing extracted transaction:', error);
       }
     }
-  }, [extractedTransaction]); // Added extractedTransaction as a dependency
+  }, [extractedTransaction]);
+
+  useEffect(() => {
+    if (resolvedAddress) {
+      setReceiverAddress(resolvedAddress);
+    }
+  }, [resolvedAddress, isError, isLoading, ensName, resolutionError]);
 
   return (
     <div className="flex h-full w-96 max-w-full flex-col px-1 md:w-[1008px]">
@@ -250,8 +266,7 @@ export default function Page() {
             address={receiverAddress} 
             value={amountValue || BigInt(1)} 
           />
-        ) : ''
-        }
+        ) : ''}
       </section>
       <Footer />
     </div>
